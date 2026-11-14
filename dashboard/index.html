@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Token Radar: pre-token protocols ranked by implied value</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<a class="skip" href="#board">Skip to the board</a>
+<header>
+<h1>Token Radar</h1>
+<p class="sub">Every pre-token protocol the snapshot records, ranked by the value its token may launch at. No token, no guess from a name: the value follows from the protocol's own TVL, its seven-day growth and how long it has run with no token.</p>
+<p class="meta" id="meta"></p>
+</header>
+<main>
+<section id="model" aria-label="How the value is modelled">
+<h2>How the implied value is modelled</h2>
+<p>Each protocol's implied value is its TVL times a multiple, times a growth multiplier, times a maturity multiplier. The multiple is calibrated per category from the snapshot's own traded protocols: the median market-cap-to-TVL ratio of that category's protocols whose token already trades, shrunk toward the global median (weight 4) so a category with one or two traded protocols cannot set an extreme multiple, and winsorised into [0.02, 2.0]. A category with no traded protocol takes the global median. Growth is the seven-day TVL change clamped to [-60, +120] per cent, weighted 0.5. Maturity rises from 0.6 for a new protocol to 1.0 at three years; an unknown listing date counts as one year.</p>
+<p class="formula">implied = TVL &times; multiple<sub>category</sub> &times; (1 + clamp(change<sub>7d</sub>, -60, 120) / 100 &times; 0.5) &times; (0.6 + min(age, 1095) / 1095 &times; 0.4)</p>
+<div id="multiples"></div>
+</section>
+<section id="controls" aria-label="Filter the board">
+<h2>The board</h2>
+<div class="filters">
+<label>Search <input id="q" type="search" placeholder="name or slug" autocomplete="off"></label>
+<label>Category <select id="cat"><option value="">All categories</option></select></label>
+<label>Chain <select id="chain"><option value="">All chains</option></select></label>
+<label class="check"><input id="wl" type="checkbox"> Watchlist only</label>
+</div>
+<p class="count" id="count"></p>
+</section>
+<section id="board" aria-label="Ranked board">
+<table>
+<thead><tr>
+<th data-k="rank">Rank</th><th data-k="name">Protocol</th><th data-k="category">Category</th>
+<th data-k="chains">Chains</th><th data-k="tvl_usd">TVL</th><th data-k="change_7d">7d</th>
+<th data-k="age_days">Age</th><th data-k="implied_value_usd">Implied value</th>
+</tr></thead>
+<tbody id="rows"></tbody>
+</table>
+<p class="hint">Click a row for its model breakdown and farm plan.</p>
+</section>
+<section id="detail" aria-label="Protocol detail" hidden>
+<h2 id="d-title"></h2>
+<div id="d-body"></div>
+</section>
+<section id="live" aria-label="Live token reference">
+<h2>Live tokens: the market's own values</h2>
+<p>These protocols already trade, so the board shows the market's value, not a model's. They are the reference the multiples above are calibrated from, and they never enter the ranked board.</p>
+<table>
+<thead><tr><th>Protocol</th><th>Category</th><th>TVL</th><th>Market cap</th><th>mcap / TVL</th><th>7d</th></tr></thead>
+<tbody id="live-rows"></tbody>
+</table>
+</section>
+</main>
+<footer><p>Token Radar. Snapshot <span id="asof"></span>. A protocol that records no token is said to record no token, never that it has none.</p></footer>
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
